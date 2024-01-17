@@ -110,7 +110,22 @@ export const verifyUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  //
+  // Suche User in Patienten Model
+  let user = await userPatientModel.findOne({ email: req.body.email, active: true }).exec();
+
+  // Wenn nihct vorhanden dann suche in Doktor
+  user =
+    user === null &&
+    (await userDoctorModel.findOne({ 'office.email': req.body.email, active: true }).exec());
+
+  if (user === null) {
+    return res.status(400).json({
+      success: false,
+      message: 'Login Fehlgeschlagen',
+    });
+  }
+
+  //to be continued...
 };
 
 export const getAllDoctors = async (req, res) => {
