@@ -1,12 +1,7 @@
 import mongoose from 'mongoose';
 
-const doctorSchema = new mongoose.Schema(
+const patientSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      enum: ['patient', 'doctor'],
-      default: 'patient',
-    },
     firstName: {
       type: String,
       required: true,
@@ -16,8 +11,7 @@ const doctorSchema = new mongoose.Schema(
       required: true,
     },
     password: { type: String, required: true },
-    profileImage: String,
-    office: {
+    address: {
       street: {
         type: String,
         required: true,
@@ -26,33 +20,34 @@ const doctorSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
-      workingTime: {
-        type: String,
-        required: true,
-      },
-      phone: {
-        type: String,
-        required: true,
-      },
-      email: {
-        type: String,
-        required: true,
-      },
-      numberOfPatients: Number,
     },
-    expertise: {
-      area: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'expertiseAreaModel',
+    phone: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      index: {
+        unique: true,
+      },
+      validate: {
+        validator: async function (value) {
+          const existingPatient = await mongoose.models.patientModel.findOne({ email: value });
+          return !existingPatient;
+        },
+        message: 'Die E-Mail-Adresse ist bereits registriert.',
       },
     },
-    rating: Number,
+    age: {
+      type: Number,
+      required: true,
+    },
     gender: {
       type: String,
       enum: ['male', 'female', 'divers'],
       required: true,
     },
-    description: String,
     active: {
       type: Boolean,
       default: false,
@@ -74,8 +69,8 @@ const doctorSchema = new mongoose.Schema(
   }
 );
 
-doctorSchema.virtual('fullName').get(function () {
-  return `${this.title} ${this.firstName} ${this.lastName}`;
+patientSchema.virtual('fullName').get(function () {
+  return `${this.firstName} ${this.lastName}`;
 });
 
-export default mongoose.model('doctorModel', doctorSchema, 'doctorProfile');
+export default mongoose.model('patientModel', patientSchema, 'patientProfile');
