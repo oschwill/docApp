@@ -32,7 +32,7 @@ export const verifyToken = (req, res, next) => {
 };
 
 export const createToken = (user) => {
-  const userToken = { name: user.email, type: user.type };
+  const userToken = { userId: user._id, name: user.email, type: user.type };
   const options = { expiresIn: '1h' };
   const accessToken = jwt.sign(userToken, process.env.ACCESS_TOKEN_SECRET, options);
 

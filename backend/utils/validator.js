@@ -35,6 +35,8 @@ export const patientSchema = Joi.object({
     ),
   street: Joi.string().required().messages(nameErrorMessages('Straße')),
   houseNr: Joi.string().required().messages(nameErrorMessages('Hausnummer')),
+  postalCode: Joi.string().required().max(5).messages(nameErrorMessages('Postleitzahl')),
+  city: Joi.string().required().messages(nameErrorMessages('Stadt')),
   phone: Joi.string().max(15).required().messages(nameErrorMessages('Telefonnummer')),
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'de'] } })
@@ -69,6 +71,8 @@ export const doctorSchema = Joi.object({
   profileImage: Joi.binary().encoding('base64').allow(null, ''),
   street: Joi.string().required().messages(nameErrorMessages('Straße')),
   houseNr: Joi.string().required().messages(nameErrorMessages('Hausnummer')),
+  postalCode: Joi.string().required().max(5).messages(nameErrorMessages('Postleitzahl')),
+  city: Joi.string().required().messages(nameErrorMessages('Stadt')),
   workingTime: Joi.string().required().messages(nameErrorMessages('Arbeitszeiten')),
   phone: Joi.string().max(15).required().messages(nameErrorMessages('Telefonnummer')),
   email: Joi.string()

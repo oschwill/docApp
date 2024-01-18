@@ -1,10 +1,11 @@
 import { createCookie, createToken } from '../middleware/token.js';
 import bcrypt from 'bcrypt';
-import userDoctorModel from '../models/user.doctorModel.js';
-import userPatientModel from '../models/user.patientModel.js';
 import { getVerifyEmailCode, registerHelper } from '../utils/authHelper.js';
 import cloudinary from '../utils/cloudinary.js';
 import { doctorSchema, patientSchema, validateData } from '../utils/validator.js';
+import patientTypeModel from '../models/patientTypeModel.js';
+import userModel from '../models/userModel.js';
+import doctorTypeModel from '../models/doctorTypeModel.js';
 
 export const registerUser = async (req, res) => {
   const user = req.body;
@@ -21,7 +22,11 @@ export const registerUser = async (req, res) => {
           }
 
           // Database
-          await registerHelper(value, userPatientModel);
+          const response = await registerHelper(value, patientTypeModel, userModel);
+
+          if (!response) {
+            throw new Error();
+          }
         }
         break;
       case 'doctor':
@@ -40,7 +45,11 @@ export const registerUser = async (req, res) => {
           }
 
           // Persistence
-          await registerHelper(value, userDoctorModel);
+          const response = await registerHelper(value, doctorTypeModel, userModel);
+
+          if (!response) {
+            throw new Error();
+          }
         }
         break;
 
@@ -66,34 +75,23 @@ export const registerUser = async (req, res) => {
 export const verifyUser = async (req, res) => {
   const emailVerifyCode = req.body.emailVerifyCode;
   const email = req.body.email;
-  const userType = req.body.type;
-
-  const hasEmailCode = await getVerifyEmailCode(
-    (userType === 'patient' && { email, emailVerifyCode }) ||
-      (userType === 'doctor' && { 'office.email': email, emailVerifyCode }),
-    (userType === 'patient' && userPatientModel) || (userType === 'doctor' && userDoctorModel)
-  );
-
-  if (!hasEmailCode) {
-    return res.status(403).json({
-      success: false,
-      message:
-        'Registrierung fehlgeschlagen, Bitte überprüfen Sie ihren Email Code! Oder senden Sie sich einen neuen Code zu!',
-    });
-  }
 
   try {
+    const hasEmailCode = await getVerifyEmailCode({ email, emailVerifyCode }, userModel);
+
+    if (!hasEmailCode) {
+      throw new Error();
+    }
+
     const update = {
       emailVerifyCode: null,
       active: true,
     };
 
-    if (userType === 'patient') {
-      await userPatientModel.findOneAndUpdate({ email }, update);
-    }
+    const response = await userModel.findOneAndUpdate({ email }, update);
 
-    if (userType === 'doctor') {
-      await userDoctorModel.findOneAndUpdate({ 'office.email': email }, update);
+    if (!response) {
+      throw new Error();
     }
 
     res.status(201).json({
@@ -101,6 +99,7 @@ export const verifyUser = async (req, res) => {
       message: 'Sie haben sich erfolgreich registriert!',
     });
   } catch (error) {
+    console.log(error);
     res.status(403).json({
       success: false,
       message:
@@ -126,9 +125,14 @@ export const loginUser = async (req, res) => {
 
     const userAuthData =
       user.userType === 'patient'
-        ? { email: user.email, type: user.userType, fullName: user.fullName }
+        ? { userId: user_id, email: user.email, type: user.userType, fullName: user.fullName }
         : user.userType === 'doctor'
-        ? { email: user.office.email, type: user.userType, fullName: user.fullName }
+        ? {
+            userId: user_id,
+            email: user.office.email,
+            type: user.userType,
+            fullName: user.fullName,
+          }
         : null;
 
     if (!userAuthData) {
