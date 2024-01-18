@@ -4,6 +4,7 @@ import {
   findDoctorByParams,
   getAllDoctors,
   getSingleDoctor,
+  loginUser,
   registerUser,
   verifyUser,
 } from '../controller/userController.js';
@@ -18,7 +19,7 @@ const hppWhitelist = ['lastName', 'expertise.area'];
 /* AUTH */
 router.route('/user/register').post(profileParser.single('profileImage'), registerUser);
 router.route('/user/verify').patch(verifyUser);
-router.route('/user/login').post(registerUser);
+router.route('/user/login').post(profileParser.none(), loginUser);
 
 /* PROFILE */
 router.route('/user/doctor/profile').put(profileParser.single('profileImage'), editProfile);

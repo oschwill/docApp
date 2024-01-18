@@ -1,3 +1,5 @@
+import { createCookie, createToken } from '../middleware/token.js';
+import bcrypt from 'bcrypt';
 import userDoctorModel from '../models/user.doctorModel.js';
 import userPatientModel from '../models/user.patientModel.js';
 import { getVerifyEmailCode, registerHelper } from '../utils/authHelper.js';
@@ -72,8 +74,6 @@ export const verifyUser = async (req, res) => {
     (userType === 'patient' && userPatientModel) || (userType === 'doctor' && userDoctorModel)
   );
 
-  console.log(hasEmailCode);
-
   if (!hasEmailCode) {
     return res.status(403).json({
       success: false,
@@ -110,22 +110,55 @@ export const verifyUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  // Suche User in Patienten Model
-  let user = await userPatientModel.findOne({ email: req.body.email, active: true }).exec();
+  try {
+    // Suche User in Patienten Model
+    let user = await userPatientModel.findOne({ email: req.body.email, active: true }).exec();
 
-  // Wenn nihct vorhanden dann suche in Doktor
-  user =
-    user === null &&
-    (await userDoctorModel.findOne({ 'office.email': req.body.email, active: true }).exec());
+    // Wenn nihct vorhanden dann suche in Doktor
+    user =
+      user === null
+        ? await userDoctorModel.findOne({ 'office.email': req.body.email, active: true }).exec()
+        : user;
 
-  if (user === null) {
-    return res.status(400).json({
+    if (!user) {
+      throw new Error();
+    }
+
+    const userAuthData =
+      user.userType === 'patient'
+        ? { email: user.email, type: user.userType, fullName: user.fullName }
+        : user.userType === 'doctor'
+        ? { email: user.office.email, type: user.userType, fullName: user.fullName }
+        : null;
+
+    if (!userAuthData) {
+      throw new Error();
+    }
+
+    if (await bcrypt.compare(req.body.password, user.password)) {
+      const authToken = createToken(userAuthData);
+
+      if (!authToken) {
+        throw new Error();
+      }
+
+      // Login / create cookie
+      createCookie(authToken, res, userAuthData);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Login erfolgreich',
+      });
+    } else {
+      throw new Error();
+    }
+  } catch (error) {
+    // Schmeiße Error
+    return res.status(401).json({
       success: false,
       message: 'Login Fehlgeschlagen',
     });
   }
-
-  //to be continued...
 };
 
 export const getAllDoctors = async (req, res) => {

@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 
 const patientSchema = new mongoose.Schema(
   {
+    userType: {
+      type: String,
+      required: true,
+      default: 'patient',
+    },
     firstName: {
       type: String,
       required: true,
@@ -34,7 +39,10 @@ const patientSchema = new mongoose.Schema(
       validate: {
         validator: async function (value) {
           const existingPatient = await mongoose.models.patientModel.findOne({ email: value });
-          return !existingPatient;
+          const existingDoctor = await mongoose.models.doctorModel.findOne({
+            'office.email': value,
+          });
+          return !existingPatient && !existingDoctor;
         },
         message: 'Die E-Mail-Adresse ist bereits registriert.',
       },

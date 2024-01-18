@@ -5,9 +5,17 @@ import xss from 'xss-clean';
 import mongoSanitize from 'express-mongo-sanitize';
 import connectDB from './config/db.js';
 import { router as userRouter } from './routes/userRoute.js';
+import cookieParser from 'cookie-parser';
+
+const corsOptions = {
+  origin: true,
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+};
 
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 app.use(xss());
 app.use(mongoSanitize());

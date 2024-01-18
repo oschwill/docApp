@@ -1,8 +1,17 @@
 import jwt from 'jsonwebtoken';
 
+const cookieOptions = (isSecure) => {
+  return {
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+    secure: isSecure,
+  };
+};
+
 export const verifyToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  // const authHeader = req.headers['authorization'];
+  // const token = authHeader && authHeader.split(' ')[1];
+  const token = req.cookies.auth;
 
   if (token === null)
     return res.sendStatus(401).json({
@@ -31,7 +40,7 @@ export const createToken = (user) => {
 };
 
 export const createCookie = (accessToken, res, user) => {
-  res.cookie('jwt', { accessToken, userName: user.username, email: user.email }, cookieOptions);
-  res.cookie('username', user.username, cookieOptions);
-  res.cookie('email', user.email, cookieOptions);
+  res.cookie('auth', accessToken, cookieOptions(true));
+  res.cookie('fullName', user.fullName, cookieOptions(false));
+  res.cookie('email', user.email, cookieOptions(false));
 };
