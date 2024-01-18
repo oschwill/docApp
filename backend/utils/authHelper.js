@@ -20,7 +20,7 @@ export const registerHelper = async (userData, userTypeModel, userModel) => {
     userTypeRes = await userType.save();
 
     if (!userTypeRes) {
-      return null;
+      return false;
     }
   }
 
@@ -45,7 +45,7 @@ export const registerHelper = async (userData, userTypeModel, userModel) => {
     userTypeRes = await userType.save();
 
     if (!userTypeRes) {
-      return null;
+      return false;
     }
   }
 
@@ -57,7 +57,7 @@ export const registerHelper = async (userData, userTypeModel, userModel) => {
     password: await hashPassword(userData.password),
     role: userTypeRes,
     phone: userData.phone,
-    email: userData.email,
+    email: userData.email.toLowerCase(),
     age: userData.age,
     gender: userData.gender,
     emailVerifyCode,
@@ -67,8 +67,7 @@ export const registerHelper = async (userData, userTypeModel, userModel) => {
   const response = await newUser.save();
 
   if (!response) {
-    console.log('first');
-    return null;
+    return false;
   }
 
   // Email versenden
@@ -84,14 +83,26 @@ const hashPassword = async (password) => {
   return hashedPassword;
 };
 
+export const updatePassword = async (_id, password, userModel) => {
+  return await userModel.findOneAndUpdate({ _id }, { password: await hashPassword(password) });
+};
+
 export const getVerifyEmailCode = async (check, dataModel) => {
   return await dataModel.findOne(check, { emailVerifyCode: 1, _id: 0 });
 };
 
-export const ResetEmailVerifyToken = () => {
+export const ResetEmailVerifyToken = async (userData, userModel) => {
   const emailVerifyCode = Math.random().toString().slice(2, 8);
 
   // DataBase
+  const response = await userModel.findOneAndUpdate({ _id: userData._id }, { emailVerifyCode });
+
+  if (!response) {
+    return false;
+  }
 
   // Email versenden
+  await sendEmail({ email: userData.email, fullName: userData.fullName, emailVerifyCode });
+
+  return true;
 };

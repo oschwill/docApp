@@ -22,8 +22,8 @@ export const sendEmail = async (options) => {
 
   // send mail with defined transport object
   const info = await transporter.sendMail({
-    from: 'mailtrap Test" <Admin@doc-app.com>', // sender address
-    to: options.email, // list of receivers
+    from: 'mailtrap Test" <Admin@doc-app.com>',
+    to: options.email,
     subject: `Hallo ${await options.fullName}, danke für das Registrieren auf unserer tollen App`, // Subject line
     text: `Hier ist Ihr Email Verifizierungscode: ${options.emailVerifyCode}`, // plain text body
     html, // html body
