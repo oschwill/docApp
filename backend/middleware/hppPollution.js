@@ -1,5 +1,5 @@
 // HPP Whitelist
-const hppWhitelist = ['lastName', 'expertise.area'];
+const hppWhitelist = ['name', 'area', 'city'];
 
 // Middleware für die HPP-Prüfung
 export const avoidQueryParams = async (req, _, next) => {

@@ -22,6 +22,7 @@ import {
   flattenObject,
   updateUserProfile,
 } from '../utils/helperFunctions.js';
+import mongoose from 'mongoose';
 
 export const registerUser = async (req, res) => {
   const user = req.body;
@@ -251,7 +252,91 @@ export const getAllDoctors = async (_, res) => {
 };
 
 export const findDoctorByParams = async (req, res) => {
-  //
+  try {
+    const { name, area, city } = req.query;
+
+    console.log(name);
+
+    // Wir bauen uns nun eine Aggregation Filter PipeLine auf
+    const pipeline = [];
+
+    pipeline.push({
+      $match: {
+        userType: 'doctor',
+        active: true,
+      },
+    });
+
+    /* WIR PUSHEN DIE FILTER IN DIE PIPELINE */
+    // name filter / Eingabe ist nicht eindeutig daher arbeiten wir mit regex
+    if (name !== null && name !== undefined) {
+      pipeline.push({
+        $match: {
+          $expr: {
+            $or: [
+              { $regexMatch: { input: '$firstName', regex: `^${name}`, options: 'i' } },
+              { $regexMatch: { input: '$lastName', regex: `^${name}`, options: 'i' } },
+              {
+                $regexMatch: {
+                  input: { $concat: ['$firstName', ' ', '$lastName'] },
+                  regex: `.*${name}.*`,
+                  options: 'i',
+                },
+              },
+            ],
+          },
+        },
+      });
+    }
+
+    // Filter für Fachkraft
+    if (area !== null && area !== undefined) {
+      pipeline.push({
+        $match: {
+          'expertise.area': new mongoose.Types.ObjectId(area),
+        },
+      });
+    }
+
+    // Filter für Stadt
+    if (city !== null && city !== undefined) {
+      pipeline.push({
+        $match: {
+          'address.city': { $regex: `.*${city}.*`, $options: 'i' },
+        },
+      });
+    }
+
+    // Lookup
+    pipeline.push({
+      $lookup: {
+        from: 'doctorTypeModel',
+        localField: '_id',
+        foreignField: 'role',
+        as: 'doctorData',
+      },
+    });
+
+    // console.log('City:', city);
+    // console.log('Pipeline:', JSON.stringify(pipeline, null, 2));
+    // console.log(
+    //   await doctorTypeModel.find({
+    //     'address.city': { $regex: `.*${city}.*`, $options: 'i' },
+    //   })
+    // );
+
+    const doctors = await userModel.aggregate(pipeline);
+
+    res.status(200).json({
+      success: true,
+      doctors,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: 'Keine Doktoren gefunden!',
+    });
+  }
 };
 
 export const getSingleDoctor = async (req, res) => {

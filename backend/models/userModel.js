@@ -96,7 +96,7 @@ userSchema.virtual('userTypeModel', {
     }
   },
   localField: '_id',
-  foreignField: 'user',
+  foreignField: 'role',
 });
 
 export default mongoose.model('userModel', userSchema, 'userProfile');

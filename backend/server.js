@@ -1,8 +1,10 @@
 import 'dotenv/config';
 import express from 'express';
+import morgan from 'morgan';
 import cors from 'cors';
 import xss from 'xss-clean';
 import mongoSanitize from 'express-mongo-sanitize';
+import helmet from 'helmet';
 import connectDB from './config/db.js';
 import { router as userRouter } from './routes/userRoute.js';
 import cookieParser from 'cookie-parser';
@@ -15,6 +17,8 @@ const corsOptions = {
 };
 
 const app = express();
+app.use(morgan('dev'));
+app.use(helmet());
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
@@ -33,4 +37,15 @@ app.all('*', (req, res, next) => {
 });
 
 const PORT = process.env.PORT || 9001;
-app.listen(PORT, () => console.log(`running on ${PORT}`));
+const server = app.listen(PORT, () => console.log(`running on ${PORT}`));
+
+// Fange Globale Errors ab und fahren den Server runter!
+process.on('uncaughtException', (err) => {
+  console.log('UNHANDLED REJECTION !! Fahre Server herunter in 3, 2, 1 ...BOOOM!');
+  console.log(err.name, err.message);
+  // Server ausschalten
+  server.close(() => {
+    // Mit close hat der server noch zeit alle prozesse die am Laufen sind abzuarbeiten!
+    process.exit(1);
+  });
+});

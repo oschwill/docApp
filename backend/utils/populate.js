@@ -85,6 +85,12 @@ const expAreas = [
     description:
       'Die Physiotherapie ist eine an der Physiologie und Pathologie orientierte Bewegungstherapie und nutzt spezielle Behandlungstechniken. Sie wird eingesetzt bei Störungen des Bewegungsapparates, des zentralen und peripheren Nervensystems, sowie bei Erkrankungen der inneren Organe und der Psyche.',
   },
+  {
+    headTitle: 'Fachkraft für Parodontologie',
+    title: 'Zahnarzt/in',
+    description:
+      'Zahnärzt*innen behandeln Zähne sowie Zahn- und Kiefererkrankungen und beraten ihre Patient*innen über die richtige Zahnpflege. Sie entfernen Karies und Zahnstein und füllen Zahnlücken mit Füllungen, wie z. B. Amalgam, Gold, Keramik oder Porzellan.',
+  },
 ];
 
 export const insertExpertiseAreas = async () => {
