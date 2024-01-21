@@ -259,6 +259,7 @@ export const findDoctorByParams = async (req, res) => {
 
     // Wir bauen uns nun eine Aggregation Filter PipeLine auf
     const pipeline = [];
+    const doctorTypePipeLine = [];
 
     pipeline.push({
       $match: {
@@ -291,7 +292,7 @@ export const findDoctorByParams = async (req, res) => {
 
     // Filter für Fachkraft
     if (area !== null && area !== undefined) {
-      pipeline.push({
+      doctorTypePipeLine.push({
         $match: {
           'expertise.area': new mongoose.Types.ObjectId(area),
         },
@@ -300,7 +301,7 @@ export const findDoctorByParams = async (req, res) => {
 
     // Filter für Stadt
     if (city !== null && city !== undefined) {
-      pipeline.push({
+      doctorTypePipeLine.push({
         $match: {
           'address.city': { $regex: `.*${city}.*`, $options: 'i' },
         },
@@ -310,20 +311,40 @@ export const findDoctorByParams = async (req, res) => {
     // Lookup
     pipeline.push({
       $lookup: {
-        from: 'doctorTypeModel',
-        localField: '_id',
-        foreignField: 'role',
+        from: 'doctorType',
+        localField: 'role',
+        foreignField: '_id',
+        pipeline: doctorTypePipeLine,
         as: 'doctorData',
       },
     });
 
-    // console.log('City:', city);
-    // console.log('Pipeline:', JSON.stringify(pipeline, null, 2));
-    // console.log(
-    //   await doctorTypeModel.find({
-    //     'address.city': { $regex: `.*${city}.*`, $options: 'i' },
-    //   })
-    // );
+    pipeline.push(
+      {
+        $addFields: {
+          hasDoctorData: {
+            $cond: {
+              if: { $ne: ['$doctorData', []] },
+              then: true,
+              else: false,
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          hasDoctorData: true,
+        },
+      },
+      {
+        $project: {
+          hasDoctorData: 0,
+        },
+      }
+    );
+
+    console.log('City:', city);
+    console.log('Pipeline:', JSON.stringify(pipeline, null, 2));
 
     const doctors = await userModel.aggregate(pipeline);
 

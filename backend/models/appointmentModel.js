@@ -13,20 +13,8 @@ const appointmentSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  year: {
-    type: Number,
-    required: true,
-  },
-  month: {
-    type: Number,
-    required: true,
-  },
-  day: {
-    type: Number,
-    required: true,
-  },
-  time: {
-    type: String,
+  meeting: {
+    type: Date,
     required: true,
   },
   problem: String,
