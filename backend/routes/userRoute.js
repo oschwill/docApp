@@ -5,6 +5,7 @@ import {
   editProfile,
   findDoctorByParams,
   getAllDoctors,
+  getPatientDataForFormular,
   getSingleDoctor,
   loginUser,
   refreshEmailVerifyToken,
@@ -13,11 +14,12 @@ import {
 } from '../controller/userController.js';
 import { avoidQueryParams } from '../middleware/hppPollution.js';
 import { profileParser } from '../utils/cloudinary.js';
+import { verifyToken } from '../middleware/token.js';
 
 export const router = express.Router();
 
 // refresh Email Token limit einbauen, damit der User nicht durchgehend neu sendet
-const limiter = rateLimit({
+export const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // alle 1 Minute darf gesendet werden!
   max: 1,
   message: (req) => {
@@ -45,3 +47,6 @@ router.route('/user/doctor/:docID').get(getSingleDoctor);
 
 /* FILTER */
 router.route('/user/doctors').get(avoidQueryParams, findDoctorByParams);
+
+/* APPOINTMENT FORM FILL */
+router.route('/user/patient').get(verifyToken, getPatientDataForFormular);

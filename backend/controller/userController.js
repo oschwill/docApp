@@ -255,8 +255,6 @@ export const findDoctorByParams = async (req, res) => {
   try {
     const { name, area, city } = req.query;
 
-    console.log(name);
-
     // Wir bauen uns nun eine Aggregation Filter PipeLine auf
     const pipeline = [];
     const doctorTypePipeLine = [];
@@ -294,7 +292,11 @@ export const findDoctorByParams = async (req, res) => {
     if (area !== null && area !== undefined) {
       doctorTypePipeLine.push({
         $match: {
-          'expertise.area': new mongoose.Types.ObjectId(area),
+          expertise: {
+            $elemMatch: {
+              area: new mongoose.Types.ObjectId(area),
+            },
+          },
         },
       });
     }
@@ -343,8 +345,18 @@ export const findDoctorByParams = async (req, res) => {
       }
     );
 
-    console.log('City:', city);
-    console.log('Pipeline:', JSON.stringify(pipeline, null, 2));
+    // EXPERTISE SICHTBAR MACHEN
+    pipeline.push({
+      $lookup: {
+        from: 'expertiseArea',
+        localField: 'doctorData.expertise.area',
+        foreignField: '_id',
+        as: 'expertiseData',
+      },
+    });
+
+    // console.log('City:', city);
+    // console.log('Pipeline:', JSON.stringify(pipeline, null, 2));
 
     const doctors = await userModel.aggregate(pipeline);
 
@@ -364,14 +376,16 @@ export const getSingleDoctor = async (req, res) => {
   try {
     const { docID } = req.params;
 
-    const doctor = await userModel.findById({ _id: docID, active: true }).populate({
-      path: 'role',
-      model: 'doctorTypeModel',
-      populate: {
-        path: 'expertise.area',
-        model: 'expertiseAreaModel',
-      },
-    });
+    const doctor = await userModel
+      .findById({ _id: docID, active: true }, { password: 0 })
+      .populate({
+        path: 'role',
+        model: 'doctorTypeModel',
+        populate: {
+          path: 'expertise.area',
+          model: 'expertiseAreaModel',
+        },
+      });
 
     res.status(200).json({
       success: true,
@@ -438,6 +452,33 @@ export const editProfile = async (req, res) => {
     res.status(400).json({
       success: false,
       message: 'Fehler beim editieren Ihrer Daten!',
+    });
+  }
+};
+
+export const getPatientDataForFormular = async (req, res) => {
+  const { userId } = req.user;
+
+  try {
+    const patientData = await userModel
+      .findById({ _id: userId, active: true }, { password: 0 })
+      .populate({
+        path: 'role',
+        model: 'patientTypeModel',
+      });
+
+    if (!patientData) {
+      throw new Error();
+    }
+
+    res.status(200).json({
+      success: true,
+      patientData,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: 'Fehler beim Holen der Patienten Daten, bitte kontaktieren Sie unseren Admin',
     });
   }
 };
