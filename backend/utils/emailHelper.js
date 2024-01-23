@@ -4,6 +4,7 @@ import { convertToGermanDate, removeHtmlTags } from './helperFunctions.js';
 
 // async..await is not allowed in global scope, must use a wrapper
 export const sendEmail = async (options) => {
+  console.log(options);
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,

@@ -81,7 +81,7 @@ export const updateUserProfile = async (userData, userTypeData, userModel, typeM
 };
 
 export const convertToDateObject = (year, month, day, time) => {
-  const [hours, minutes] = time.split(':');
+  const [hours, minutes] = time !== '' ? time.split(':') : '00:00'.split(':');
   const meetingDate = new Date(year, month, day, hours, minutes);
 
   return meetingDate;
@@ -96,7 +96,7 @@ export const convertToGermanDate = (date) => {
     minute: '2-digit',
   };
 
-  return date.toLocaleString('de-DE', options);
+  return date?.toLocaleString('de-DE', options);
 };
 
 export const removeHtmlTags = (inputString) => {

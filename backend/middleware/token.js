@@ -9,12 +9,10 @@ const cookieOptions = (isSecure) => {
 };
 
 export const verifyToken = (req, res, next) => {
-  // const authHeader = req.headers['authorization'];
-  // const token = authHeader && authHeader.split(' ')[1];
   const token = req.cookies.auth;
 
   if (token === null) {
-    return res.send(401).json({
+    return res.status(401).json({
       success: false,
       message: 'Authentifizierung fehlgeschlagen!',
     });
@@ -34,7 +32,6 @@ export const verifyToken = (req, res, next) => {
       success: false,
       message: 'FORBIDDEN ROUTE!!',
     });
-    // res.status(401).end();
   }
 };
 
