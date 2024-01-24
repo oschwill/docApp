@@ -24,7 +24,7 @@ services:
     ports:
       - $PORT:9000
     environment:
-      DB_URL: MONGODB_URI=$MONGO_DB
+      - MONGO_DB=$MONGO_DB
     develop:
       watch:
         - path: ./backend/package.json

@@ -5,6 +5,7 @@ const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_DB);
 
+    console.log(process.env.MONGO_DB);
     console.log('DB CONNECTED');
 
     // insert expertise
