@@ -1,11 +1,19 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import Header from '../components/header/Header';
+import { getHeaderTitle } from '../utils/helperFuntions';
 
 const RootLayout = () => {
+  const location = useLocation();
+
+  const headerTitle = getHeaderTitle(location.pathname);
+
   return (
     <>
       <div>
-        <h1>LAYOUT</h1>
-        <Outlet />
+        <Header isHome={location.pathname === '/' ? true : false}>{headerTitle}</Header>
+        <main className="mb-[15%]">
+          <Outlet />
+        </main>
       </div>
     </>
   );

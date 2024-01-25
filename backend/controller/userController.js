@@ -35,7 +35,9 @@ export const registerUser = async (req, res) => {
           const { error, value } = validateData(user, patientSchema);
 
           if (error) {
-            return res.status(418).json({ message: error.details[0].message });
+            return res
+              .status(418)
+              .json({ path: error.details[0].path, message: error.details[0].message });
           }
 
           // Database
@@ -54,7 +56,7 @@ export const registerUser = async (req, res) => {
           if (error) {
             return res
               .status(418)
-              .json({ message: 'Validierung fehlgeschlagen: ' + error.details[0].message });
+              .json({ path: error.details[0].path, message: error.details[0].message });
           }
 
           if (req.file) {
@@ -118,7 +120,6 @@ export const verifyUser = async (req, res) => {
       message: 'Sie haben sich erfolgreich registriert!',
     });
   } catch (error) {
-    console.log(error);
     res.status(403).json({
       success: false,
       message:

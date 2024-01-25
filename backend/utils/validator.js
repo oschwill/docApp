@@ -27,6 +27,7 @@ const nameErrorMessages = (keyName, optionalMessage) => {
     'string.max': `${translator.de[keyName]} darf maximal {#limit} Zeichen lang sein`,
     'string.email': 'Die E-Mail-Adresse ist nicht gültig.',
     'string.base': `${translator.de[keyName]} muss eine Zeichenkette sein`,
+    'string.pattern.base': `${translator.de[keyName]} ist nicht gültig`,
   };
 
   if (optionalMessage) {
@@ -59,7 +60,11 @@ export const patientSchema = Joi.object({
   houseNr: Joi.string().required().messages(nameErrorMessages('houseNr')),
   postalCode: Joi.string().required().max(5).messages(nameErrorMessages('postalCode')),
   city: Joi.string().required().messages(nameErrorMessages('city')),
-  phone: Joi.string().max(15).required().messages(nameErrorMessages('phone')),
+  phone: Joi.string()
+    .pattern(/^[0-9]+$/)
+    .max(15)
+    .required()
+    .messages(nameErrorMessages('phone')),
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'de'] } })
     .required()
@@ -108,7 +113,11 @@ export const doctorSchema = Joi.object({
   postalCode: Joi.string().required().max(5).messages(nameErrorMessages('postalCode')),
   city: Joi.string().required().messages(nameErrorMessages('city')),
   workingTime: Joi.string().required().messages(nameErrorMessages('workingTime')),
-  phone: Joi.string().max(15).required().messages(nameErrorMessages('phone')),
+  phone: Joi.string()
+    .pattern(/^[0-9]+$/)
+    .max(15)
+    .required()
+    .messages(nameErrorMessages('phone')),
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'de'] } })
     .required()
