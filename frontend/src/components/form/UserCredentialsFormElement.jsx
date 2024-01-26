@@ -123,7 +123,7 @@ const UserCredentialsFormElement = ({
               id="profileImage"
               name="profileImage"
               className="border-2"
-              value={formData.profileImage}
+              // value={formData.profileImage}
               onChange={onHandleChangeFormData}
               disabled={hasSuccessMessage}
             />

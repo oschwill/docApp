@@ -27,6 +27,8 @@ import mongoose from 'mongoose';
 export const registerUser = async (req, res) => {
   const user = req.body;
 
+  console.log(user);
+
   try {
     switch (user.type) {
       case 'patient':

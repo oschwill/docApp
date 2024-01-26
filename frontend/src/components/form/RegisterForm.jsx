@@ -28,6 +28,10 @@ const RegisterForm = () => {
 
       return;
     }
+    if (e.target.name === 'profileImage') {
+      userFormDispatch({ type: 'SET_FIELD', field: e.target.name, value: e.target.files[0] });
+      return;
+    }
     userFormDispatch({ type: 'SET_FIELD', field: e.target.name, value: e.target.value });
   };
 
@@ -67,7 +71,8 @@ const RegisterForm = () => {
 
           Object.keys(cleanStateKeys).forEach((key) => {
             if (key === 'expertise') {
-              userFormData[key].forEach((exp) => formData.append(key, exp));
+              // mit `${key}[${index}]` sagen wir ihm explizit es muss ein Array sein auch wenn wir nur einen Wert haben
+              userFormData[key].forEach((exp, index) => formData.append(`${key}[${index}]`, exp));
             } else if (key === 'workingTime') {
               formData.append(key, cleanStateKeys.workingTime);
             } else {
