@@ -56,6 +56,15 @@ export const initialUserState = {
   verifyToken: '',
 };
 
+export const initialUserLoginState = {
+  email: '',
+  password: '',
+  loginErrors: {
+    email: 'Die Email Addresse muss ausgefüllt werden',
+    password: 'Ihr Passwort muss ausgefüllt werden!',
+  },
+};
+
 export const reducer = (state, action) => {
   switch (action.type) {
     case 'SET_FIELD':
@@ -68,7 +77,7 @@ export const reducer = (state, action) => {
   }
 };
 
-export const validateUserForm = (fields, type) => {
+export const validateUserForm = (fields, type = null) => {
   let errors = {};
 
   if (type === 'patient') {
@@ -87,7 +96,15 @@ export const validateUserForm = (fields, type) => {
     });
   }
 
-  if (fields.password !== fields.repeatPassword) {
+  if (type === 'login') {
+    Object.keys(initialUserLoginState.loginErrors).forEach((fieldValue) => {
+      if (!fields[fieldValue]) {
+        errors[fieldValue] = initialUserLoginState.loginErrors[fieldValue];
+      }
+    });
+  }
+
+  if (fields.password !== fields.repeatPassword && type !== 'login') {
     errors.repeatPassword = 'Das Password wdh stimmt nicht mit dem Passwort überein';
   }
 

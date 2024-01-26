@@ -89,7 +89,6 @@ const RegisterForm = () => {
     // versenden der Daten
     const response = await sendData('POST', '/api/v1/user/register', formData);
 
-    console.log(response);
     setIsLoading(false);
     if (response.data && response.data.success) {
       setSuccessMessage(response.data.message);
@@ -150,7 +149,7 @@ const RegisterForm = () => {
       {userType && (
         <>
           <UserCredentialsFormElement
-            hasRepeatPassword={true}
+            isLoginForm={false}
             userType={userType}
             formData={userFormData}
             onHandleChangeFormData={handleChangeUserFormData}

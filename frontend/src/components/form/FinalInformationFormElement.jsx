@@ -73,25 +73,8 @@ const FinalInformationFormElement = ({
           )}
         </div>
       </div>
-      {/* EMAIL / GESCHLECHT */}
+      {/*  / GESCHLECHT */}
       <div className="flex flex-col gap-2">
-        <div className="p-2 grid grid-cols-authForm relative">
-          <label htmlFor="email" className="pr-4">
-            Email<span className="text-red-600 text-[2rem] font-bold">*</span>:
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className="border-2"
-            value={formData.email}
-            onChange={onHandleChangeFormData}
-            disabled={hasSuccessMessage}
-          />
-          {formData.errors && formData.errors.email && (
-            <ErrorToolTip errorMessage={formData.errors.email} refresh={refresh} />
-          )}
-        </div>
         <div className="p-2 grid grid-cols-authForm relative">
           <label htmlFor="gender" className="pr-4">
             Geschlecht<span className="text-red-600 text-[2rem] font-bold">*</span>:

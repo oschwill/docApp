@@ -1,10 +1,19 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
+import { logout } from '../../utils/helperFuntions';
+import { FullNameContext } from '../../context/Context';
 
 const Header = ({ isHome, children }) => {
   const [showAuthOptions, setShowAuthOptions] = useState(false);
+  const [refresh, setRefresh] = useState(null);
+
+  const { userName, setUserName } = useContext(FullNameContext);
+
+  useEffect(() => {
+    setShowAuthOptions(false);
+  }, [refresh]);
 
   const handleSetShowOptions = () => {
     setShowAuthOptions((cur) => !cur);
@@ -23,9 +32,9 @@ const Header = ({ isHome, children }) => {
               className="h-6 cursor-pointer"
             />
           ) : (
-            <p className="text-[1.5rem]">
-              <Link to="/login">Please Login</Link>
-            </p>
+            <div className="text-[1.5rem]">
+              {userName ? <p>{userName}</p> : <Link to="/login">Please Login</Link>}
+            </div>
           )}
           <p className="text-[1.5rem] font-bold">{children}</p>
           <div className="flex gap-12">
@@ -38,14 +47,32 @@ const Header = ({ isHome, children }) => {
             />
           </div>
           {showAuthOptions && (
-            <div className="flex flex-col absolute right-0 top-10 border-2 p-4 bg-secondFontColor text-[1.5rem]">
-              <Link to="/login" className="underline font-bold text-blue-700">
-                Login
-              </Link>
-              <Link to="register" className="underline font-bold text-blue-700">
-                Register
-              </Link>
-            </div>
+            <>
+              {userName ? (
+                <div className="flex flex-col absolute right-0 top-10 border-2 p-4 bg-secondFontColor text-[1.5rem]">
+                  <p
+                    className="underline font-bold text-blue-700 cursor-pointer"
+                    onClick={() => {
+                      logout();
+                      setRefresh(crypto.randomUUID());
+                      setUserName(null);
+                      navigate('/');
+                    }}
+                  >
+                    Logout
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col absolute right-0 top-10 border-2 p-4 bg-secondFontColor text-[1.5rem]">
+                  <Link to="/login" className="underline font-bold text-blue-700">
+                    Login
+                  </Link>
+                  <Link to="register" className="underline font-bold text-blue-700">
+                    Register
+                  </Link>
+                </div>
+              )}
+            </>
           )}
         </article>
       </section>

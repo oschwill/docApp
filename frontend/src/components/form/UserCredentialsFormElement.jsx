@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import ErrorToolTip from '../error/ErrorToolTip';
 
 const UserCredentialsFormElement = ({
-  hasRepeatPassword,
+  isLoginForm,
   userType,
   formData,
   onHandleChangeFormData,
@@ -40,38 +40,59 @@ const UserCredentialsFormElement = ({
             </>
           )}
         </div>
+        {!isLoginForm && (
+          <>
+            <div className="p-2 grid grid-cols-authForm relative">
+              <label htmlFor="firstName" className="pr-4">
+                Vorname<span className="text-red-600 text-[2rem] font-bold">*</span>:
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                className="border-2"
+                value={formData.firstName}
+                onChange={onHandleChangeFormData}
+                disabled={hasSuccessMessage}
+              />
+              {formData.errors && formData.errors.firstName && (
+                <ErrorToolTip errorMessage={formData.errors.firstName} refresh={refresh} />
+              )}
+            </div>
+            <div className="p-2 grid grid-cols-authForm relative">
+              <label htmlFor="lastName" className="pr-4">
+                Nachname<span className="text-red-600 text-[2rem] font-bold">*</span>:
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                className="border-2"
+                value={formData.lastName}
+                onChange={onHandleChangeFormData}
+                disabled={hasSuccessMessage}
+              />
+              {formData.errors && formData.errors.lastName && (
+                <ErrorToolTip errorMessage={formData.errors.lastName} refresh={refresh} />
+              )}
+            </div>
+          </>
+        )}
         <div className="p-2 grid grid-cols-authForm relative">
-          <label htmlFor="firstName" className="pr-4">
-            Vorname<span className="text-red-600 text-[2rem] font-bold">*</span>:
+          <label htmlFor="email" className="pr-4">
+            Email<span className="text-red-600 text-[2rem] font-bold">*</span>:
           </label>
           <input
-            type="text"
-            id="firstName"
-            name="firstName"
+            type="email"
+            id="email"
+            name="email"
             className="border-2"
-            value={formData.firstName}
+            value={formData.email}
             onChange={onHandleChangeFormData}
             disabled={hasSuccessMessage}
           />
-          {formData.errors && formData.errors.firstName && (
-            <ErrorToolTip errorMessage={formData.errors.firstName} refresh={refresh} />
-          )}
-        </div>
-        <div className="p-2 grid grid-cols-authForm relative">
-          <label htmlFor="lastName" className="pr-4">
-            Nachname<span className="text-red-600 text-[2rem] font-bold">*</span>:
-          </label>
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            className="border-2"
-            value={formData.lastName}
-            onChange={onHandleChangeFormData}
-            disabled={hasSuccessMessage}
-          />
-          {formData.errors && formData.errors.lastName && (
-            <ErrorToolTip errorMessage={formData.errors.lastName} refresh={refresh} />
+          {formData.errors && formData.errors.email && (
+            <ErrorToolTip errorMessage={formData.errors.email} refresh={refresh} />
           )}
         </div>
       </div>
@@ -94,7 +115,7 @@ const UserCredentialsFormElement = ({
             <ErrorToolTip errorMessage={formData.errors.password} refresh={refresh} />
           )}
         </div>
-        {hasRepeatPassword && (
+        {!isLoginForm && (
           <div className="p-2 grid grid-cols-authForm relative">
             <label htmlFor="repeatPassword" className="pr-4">
               Passwort wdh<span className="text-red-600 text-[2rem] font-bold">*</span>:
@@ -123,7 +144,7 @@ const UserCredentialsFormElement = ({
               id="profileImage"
               name="profileImage"
               className="border-2"
-              // value={formData.profileImage}
+              value={formData.profileImage}
               onChange={onHandleChangeFormData}
               disabled={hasSuccessMessage}
             />
@@ -135,7 +156,7 @@ const UserCredentialsFormElement = ({
 };
 
 UserCredentialsFormElement.propTypes = {
-  hasRepeatPassword: PropTypes.bool,
+  isLoginForm: PropTypes.bool,
   userType: PropTypes.string,
   formData: PropTypes.object,
   onHandleChangeFormData: PropTypes.func,

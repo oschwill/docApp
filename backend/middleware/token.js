@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 
-const cookieOptions = (isSecure) => {
+const cookieOptions = (hasHttpFlag, isSecure) => {
   return {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-    httpOnly: true,
+    httpOnly: hasHttpFlag,
     secure: isSecure,
   };
 };
@@ -44,9 +44,8 @@ export const createToken = (user) => {
 };
 
 export const createCookie = (accessToken, res, user) => {
-  res.cookie('auth', accessToken, cookieOptions(true));
-  res.cookie('fullName', user.fullName, cookieOptions(false));
-  res.cookie('email', user.email, cookieOptions(false));
+  res.cookie('auth', accessToken, cookieOptions(true, true));
+  res.cookie('fullName', user.fullName, cookieOptions(false, false));
 };
 
 export const onlyForDoctors = (req, res, next) => {

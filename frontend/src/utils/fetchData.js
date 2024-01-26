@@ -14,6 +14,7 @@ export const sendData = async (method, urlParams, data = null, headers = {}) => 
       url,
       data,
       headers,
+      withCredentials: true,
     });
 
     return response;

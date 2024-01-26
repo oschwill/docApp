@@ -2,11 +2,13 @@ import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import {
   changePassword,
+  checkAuth,
   editProfile,
   findDoctorByParams,
   getAllDoctors,
   getPatientDataForFormular,
   getSingleDoctor,
+  logOutUser,
   loginUser,
   refreshEmailVerifyToken,
   registerUser,
@@ -36,6 +38,8 @@ router.route('/user/register').post(profileParser.single('profileImage'), regist
 router.route('/user/verify').patch(verifyUser);
 router.route('/user/login').post(profileParser.none(), loginUser);
 router.route('/user/resendEmailToken').post(limiter, refreshEmailVerifyToken);
+router.route('/user/logout').post(verifyToken, logOutUser);
+router.route('/user/check-auth').post(verifyToken, checkAuth);
 
 /* PROFILE */
 router.route('/user/doctor/profile').put(profileParser.single('profileImage'), editProfile);

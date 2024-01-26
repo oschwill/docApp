@@ -1,5 +1,19 @@
-export const checkLogin = () => {
-  return document.cookie.indexOf('cookie_name=jwt') === 1;
+import { sendData } from './fetchData';
+
+export const checkLogin = async () => {
+  const response = await sendData('POST', '/api/v1/user/check-auth');
+
+  return response.data.success;
+};
+
+export const getUserCredentials = (cookieName) => {
+  const cookies = document.cookie.split('; ');
+  const cookie = cookies.find((row) => row.trim().startsWith(cookieName + '='));
+  return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+};
+
+export const logout = async () => {
+  await sendData('POST', '/api/v1/user/logout');
 };
 
 export const getHeaderTitle = (pathname) => {

@@ -485,3 +485,22 @@ export const getPatientDataForFormular = async (req, res) => {
     });
   }
 };
+
+export const logOutUser = async (req, res) => {
+  res.cookie('auth', '', { expires: new Date(0), path: '/', httpOnly: true, secure: true });
+  res.cookie('fullName', '', { expires: new Date(0), path: '/' });
+  res.cookie('email', '', { expires: new Date(0), path: '/' });
+  res.send('Logged out');
+};
+
+export const checkAuth = async (req, res) => {
+  if (req.user) {
+    return res.status(200).json({
+      success: true,
+    });
+  }
+
+  return res.status(200).json({
+    success: false,
+  });
+};
