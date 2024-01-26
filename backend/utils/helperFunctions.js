@@ -102,3 +102,14 @@ export const convertToGermanDate = (date) => {
 export const removeHtmlTags = (inputString) => {
   return inputString.replace(/<\/?[^>]+(>|$)/g, '');
 };
+
+export const getFullName = async (user, userTypeModel) => {
+  if (user.userType === 'patient') {
+    return `${user.firstName} ${user.lastName}`;
+  }
+
+  if (user.userType === 'doctor') {
+    const doctor = await userTypeModel.findById(user.role._id, { title: 1 }).populate('title');
+    return `${doctor.title} ${user.firstName} ${user.lastName}`;
+  }
+};

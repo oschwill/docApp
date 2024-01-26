@@ -5,7 +5,7 @@ import SubmitButtonFormElement from './SubmitButtonFormElement';
 import UserCredentialsFormElement from './UserCredentialsFormElement';
 import UserTypeFormElement from './UserTypeFormElement';
 import { initialUserState, reducer, validateUserForm } from '../../utils/stateHandler';
-import { createCleanedUserState, createObject } from '../../utils/helperFuntions';
+import { createCleanedUserState, createObject, scrollToTop } from '../../utils/helperFuntions';
 import { sendData } from '../../utils/fetchData';
 import { Link } from 'react-router-dom';
 import VerifyTokenFormElement from './VerifyTokenFormElement';
@@ -51,6 +51,8 @@ const RegisterForm = () => {
     if (Object.keys(formErrors).length > 0) {
       setIsLoading(false);
       userFormDispatch({ type: 'SET_ERROR', errors: formErrors });
+      // scroll to top
+      scrollToTop();
       return;
     }
 
@@ -96,10 +98,13 @@ const RegisterForm = () => {
     }
 
     const customError = createObject(
-      response.response.data.path[0],
-      response.response.data.message
+      response.response?.data?.path && response.response.data.path.length > 0
+        ? response.response.data.path[0]
+        : 'email',
+      response?.response?.data?.message || response.data.message
     );
     userFormDispatch({ type: 'SET_ERROR', errors: customError });
+    scrollToTop();
   };
 
   const onVerifyToken = async () => {

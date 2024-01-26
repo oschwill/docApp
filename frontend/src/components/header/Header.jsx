@@ -49,7 +49,7 @@ const Header = ({ isHome, children }) => {
           {showAuthOptions && (
             <>
               {userName ? (
-                <div className="flex flex-col absolute right-0 top-10 border-2 p-4 bg-secondFontColor text-[1.5rem]">
+                <div className="flex flex-col absolute right-0 top-10 border-2 p-4 bg-secondFontColor text-[1.5rem] z-10">
                   <p
                     className="underline font-bold text-blue-700 cursor-pointer"
                     onClick={() => {
@@ -63,7 +63,7 @@ const Header = ({ isHome, children }) => {
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col absolute right-0 top-10 border-2 p-4 bg-secondFontColor text-[1.5rem]">
+                <div className="flex flex-col absolute z-10 right-0 top-10 border-2 p-4 bg-secondFontColor text-[1.5rem]">
                   <Link to="/login" className="underline font-bold text-blue-700">
                     Login
                   </Link>

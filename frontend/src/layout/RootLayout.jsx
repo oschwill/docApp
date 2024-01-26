@@ -15,7 +15,7 @@ const RootLayout = () => {
       <div>
         <FullNameContext.Provider value={{ userName, setUserName }}>
           <Header isHome={location.pathname === '/' ? true : false}>{headerTitle}</Header>
-          <main className="mb-[15%]">
+          <main className="mb-[35%]">
             <Outlet />
           </main>
         </FullNameContext.Provider>

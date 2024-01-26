@@ -1,9 +1,13 @@
 import { sendData } from './fetchData';
+import dentist from '../assets/images/dentist.svg';
+import brain from '../assets/images/brainIcon.svg';
+import genetics from '../assets/images/genetics.svg';
+import radio from '../assets/images/radiologie.jpg';
 
 export const checkLogin = async () => {
   const response = await sendData('POST', '/api/v1/user/check-auth');
 
-  return response.data.success;
+  return response.data && response.data.success;
 };
 
 export const getUserCredentials = (cookieName) => {
@@ -83,4 +87,28 @@ export const createCleanedUserState = (initialUserState, userType) => {
 
 export const createObject = (key, value) => {
   return { [key]: value };
+};
+
+export const getRandomPicture = () => {
+  const pictures = [dentist, brain, genetics, radio];
+
+  const randomIndex = Math.floor(Math.random() * pictures.length);
+  return pictures[randomIndex];
+};
+
+export const getQueryParam = (param) => {
+  const searchParams = new URLSearchParams(window.location.search);
+  return searchParams.get(param);
+};
+
+export const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth',
+  });
+};
+
+export const ArrayToString = (arr) => {
+  return arr.map((obj) => obj.title).join(', ');
 };

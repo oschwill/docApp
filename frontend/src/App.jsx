@@ -14,11 +14,12 @@ import Appointment from './pages/Appointment';
 import LoadSite from './components/loading/LoadSite';
 import requireAuth from './utils/requireAuth';
 import { checkLogin } from './utils/helperFuntions';
+import { getData } from './utils/fetchData';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
-      <Route index element={<Home />} />
+      <Route index element={<Home />} loader={() => getData('/api/v1/doc-info/get-all-areas')} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/search-doctors" element={<SearchDoctors />} />

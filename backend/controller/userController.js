@@ -20,6 +20,7 @@ import {
   extractAndRemoveKeys,
   flattenKeys,
   flattenObject,
+  getFullName,
   updateUserProfile,
 } from '../utils/helperFunctions.js';
 import mongoose from 'mongoose';
@@ -233,14 +234,23 @@ export const changePassword = async (req, res) => {
 
 export const getAllDoctors = async (_, res) => {
   try {
-    const doctors = await userModel.find({ userType: 'doctor', active: true }).populate({
-      path: 'role',
-      model: 'doctorTypeModel',
-      populate: {
-        path: 'expertise.area',
-        model: 'expertiseAreaModel',
-      },
-    });
+    const doctors = await userModel
+      .find({ userType: 'doctor', active: true })
+      .populate({
+        path: 'role',
+        model: 'doctorTypeModel',
+        populate: {
+          path: 'expertise.area',
+          model: 'expertiseAreaModel',
+        },
+      })
+      .lean(); // Umwandeln in js obj
+
+    // Da wir hier nicht auf den virtual await können, weil keine gute Praxis
+    // ist holen wir nochmal den fullName über eine Helper function getFullName
+    for (let doctor of doctors) {
+      doctor.fullName = await getFullName(doctor, doctorTypeModel);
+    }
 
     res.status(200).json({
       success: true,
@@ -332,6 +342,21 @@ export const findDoctorByParams = async (req, res) => {
               if: { $ne: ['$doctorData', []] },
               then: true,
               else: false,
+            },
+          },
+          fullName: {
+            $cond: {
+              if: { $eq: ['$userType', 'doctor'] },
+              then: {
+                $concat: [
+                  { $arrayElemAt: ['$doctorData.title', 0] },
+                  ' ',
+                  '$firstName',
+                  ' ',
+                  '$lastName',
+                ],
+              },
+              else: 'Nicht verfügbar',
             },
           },
         },

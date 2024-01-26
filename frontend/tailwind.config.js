@@ -13,7 +13,7 @@ export default {
     },
     gridTemplateColumns: {
       authForm: '1.5fr 3fr',
-      three: '1fr 1fr',
+      two: '1fr 1fr',
     },
   },
   plugins: [],
