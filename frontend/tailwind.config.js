@@ -7,6 +7,7 @@ export default {
         secondFontColor: '#FFF',
         homeColor: '#3E64FF',
         mainBGButtonColor: '#97979715',
+        secondBGButtonColor: '#3E64FF',
         mainBGButtonColorHover: '#97979750',
         errorMessageBGColor: '#B91C1C90',
       },

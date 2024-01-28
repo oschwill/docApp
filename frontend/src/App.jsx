@@ -16,6 +16,9 @@ import requireAuth from './utils/requireAuth';
 import { checkLogin } from './utils/helperFuntions';
 import { getData } from './utils/fetchData';
 
+const ProtectedAppointment = requireAuth(Appointment, checkLogin);
+const ProtectedProfile = requireAuth(Profile, checkLogin);
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
@@ -23,11 +26,8 @@ const router = createBrowserRouter(
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/search-doctors" element={<SearchDoctors />} />
-      <Route path="/doctor/:id" element={<Profile />} />
-      <Route
-        path="/doctor/:id/new-appointment"
-        element={requireAuth(<Appointment />, checkLogin())}
-      />
+      <Route path="/doctor/:id" element={<ProtectedProfile />} />
+      <Route path="/doctor/:id/new-appointment" element={<ProtectedAppointment />} />
     </Route>
   )
 );

@@ -1,26 +1,29 @@
 import { useEffect, useState } from 'react';
 import { ArrayToString, getQueryParam } from '../utils/helperFuntions';
 import { getData } from '../utils/fetchData';
+import LoadingElement from '../components/loading/LoadingElement';
+import { Link } from 'react-router-dom';
 
 const SearchDoctors = () => {
   const [docData, setDocData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       const qParam = getQueryParam('area');
+      setIsLoading(true);
 
       if (qParam) {
         const response = await getData(`/api/v1/user/doctors?area=${qParam}`);
 
         setDocData(response.data.doctors);
+        setIsLoading(false);
         return;
       }
 
       const response = await getData('/api/v1/user/all-doctors');
-
-      console.log(response.data);
-
       setDocData(response.data.doctors);
+      setIsLoading(false);
     }
 
     fetchData();
@@ -47,37 +50,38 @@ const SearchDoctors = () => {
         </form>
       </article>
       <article className="w-[92.5%] grid grid-cols-two gap-8 mb-24">
-        {docData && docData.length > 0 ? (
-          docData.map((item) => {
-            return (
-              <div
-                className="flex flex-col items-center justify-center bg-white rounded-2xl p-8 gap-2 text-center"
-                key={item._id}
-              >
-                <div className="flex justify-center">
-                  <img
-                    src={
-                      item.doctorData !== undefined && item.doctorData[0].profileImage?.path
-                        ? item.doctorData[0].profileImage.path
-                        : item.role.profileImage !== undefined && item.role?.profileImage.path
-                        ? item.role.profileImage.path
-                        : '/images/DoctorImageExample.jpg'
-                    }
-                    alt="profileImage"
-                    className="h-[100px] rounded-full object-cover"
-                  />
-                </div>
-                <h2 className="text-[2rem]">{item.fullName}</h2>
+        {!isLoading ? (
+          docData && docData.length > 0 ? (
+            docData.map((item) => (
+              <Link to={`/doctor/${item._id}`} key={item._id} className="hover:opacity-75">
+                <div className="flex flex-col items-center justify-center bg-white rounded-2xl p-8 gap-2 text-center">
+                  <div className="flex justify-center">
+                    <img
+                      src={
+                        item.doctorData !== undefined && item.doctorData[0].profileImage?.path
+                          ? item.doctorData[0].profileImage.path
+                          : item.role.profileImage !== undefined && item.role?.profileImage.path
+                          ? item.role.profileImage.path
+                          : '/images/DoctorImageExample.jpg'
+                      }
+                      alt="profileImage"
+                      className="h-[100px] rounded-full object-cover"
+                    />
+                  </div>
+                  <h2 className="text-[2rem]">{item.fullName}</h2>
 
-                <p className="text-[1.5rem]">
-                  {ArrayToString(item.expertiseData ? item.expertiseData : item.role.expertise)}
-                </p>
-                <p className="text-[1.5rem]">Bewertung folgt</p>
-              </div>
-            );
-          })
+                  <p className="text-[1.5rem]">
+                    {ArrayToString(item.expertiseData ? item.expertiseData : item.role.expertise)}
+                  </p>
+                  <p className="text-[1.5rem]">Bewertung folgt</p>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <p>Keine Ärzte gefunden, bitte nutzen Sie die Suche!</p>
+          )
         ) : (
-          <p>Keine Ärzte gefunden, bitte nutzen Sie die Suche!</p>
+          <LoadingElement />
         )}
       </article>
     </section>

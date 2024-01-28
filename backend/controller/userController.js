@@ -250,6 +250,7 @@ export const getAllDoctors = async (_, res) => {
     // ist holen wir nochmal den fullName über eine Helper function getFullName
     for (let doctor of doctors) {
       doctor.fullName = await getFullName(doctor, doctorTypeModel);
+      doctor.role.expertise = doctor.role.expertise.map((item) => item.area);
     }
 
     res.status(200).json({
@@ -413,7 +414,11 @@ export const getSingleDoctor = async (req, res) => {
           path: 'expertise.area',
           model: 'expertiseAreaModel',
         },
-      });
+      })
+      .lean();
+
+    doctor.fullName = await getFullName(doctor, doctorTypeModel);
+    doctor.role.expertise = doctor.role.expertise.map((item) => item.area);
 
     res.status(200).json({
       success: true,

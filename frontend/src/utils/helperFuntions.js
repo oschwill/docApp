@@ -5,9 +5,14 @@ import genetics from '../assets/images/genetics.svg';
 import radio from '../assets/images/radiologie.jpg';
 
 export const checkLogin = async () => {
+  let isLoggedIn = false;
   const response = await sendData('POST', '/api/v1/user/check-auth');
 
-  return response.data && response.data.success;
+  if (response.data && response.data.success) {
+    isLoggedIn = true;
+  }
+
+  return isLoggedIn;
 };
 
 export const getUserCredentials = (cookieName) => {
@@ -111,4 +116,10 @@ export const scrollToTop = () => {
 
 export const ArrayToString = (arr) => {
   return arr.map((obj) => obj.title).join(', ');
+};
+
+export const buildWorkingTimeString = (obj) => {
+  return `${obj.startDay.slice(0, 3)} - ${obj.endDay.slice(0, 3)} (${obj.startTime} - ${
+    obj.endTime
+  } )`;
 };

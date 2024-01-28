@@ -13,6 +13,9 @@ export const sendEmail = async (options) => {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
 
   const html = `
@@ -23,7 +26,7 @@ export const sendEmail = async (options) => {
 
   // send mail with defined transport object
   const info = await transporter.sendMail({
-    from: 'mailtrap Test" <Admin@doc-app.com>',
+    from: `docApp - ${process.env.EMAIL_USERNAME}`,
     to: options.email,
     subject: `Hallo ${await options.fullName}, danke für das Registrieren auf unserer tollen App`, // Subject line
     text: `Hier ist Ihr Email Verifizierungscode: ${options.emailVerifyCode}`,

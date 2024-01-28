@@ -37,12 +37,19 @@ const Header = ({ isHome, children }) => {
             </div>
           )}
           <p className="text-[1.5rem] font-bold">{children}</p>
-          <div className="flex gap-12">
-            <img src="/images/calendar.png" alt="calendar" className="cursor-pointer" />
+          <div className="flex gap-12 items-center">
+            <Link to="/" className="mr-[-10px]">
+              <img
+                src="/images/home_icon.png"
+                alt="calendar"
+                className="cursor-pointer h-[35px] "
+              />
+            </Link>
+            <img src="/images/calendar.png" alt="calendar" className="cursor-pointer h-[25px]" />
             <img
               src="/images/dotMenu.png"
               alt="calendar"
-              className="hover:opacity-5 cursor-pointer"
+              className="hover:opacity-5 cursor-pointer h-[25px]"
               onClick={() => handleSetShowOptions()}
             />
           </div>
