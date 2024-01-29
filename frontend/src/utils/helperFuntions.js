@@ -123,3 +123,11 @@ export const buildWorkingTimeString = (obj) => {
     obj.endTime
   } )`;
 };
+
+export const queryBuilder = (params) => {
+  let queryString = `?name=${encodeURIComponent(params.name)}`;
+  if (params.area) {
+    queryString += `&area=${encodeURIComponent(params.area)}`;
+  }
+  return queryString;
+};

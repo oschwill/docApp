@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { ArrayToString, getQueryParam } from '../utils/helperFuntions';
+import { useEffect, useRef, useState } from 'react';
+import { ArrayToString, getQueryParam, queryBuilder } from '../utils/helperFuntions';
 import { getData } from '../utils/fetchData';
 import LoadingElement from '../components/loading/LoadingElement';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 const SearchDoctors = () => {
   const [docData, setDocData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const nameRef = useRef();
 
   useEffect(() => {
     async function fetchData() {
@@ -28,22 +30,64 @@ const SearchDoctors = () => {
 
     fetchData();
   }, []);
-  const searchDocs = () => {
-    //
+
+  const searchDocs = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const area = getQueryParam('area');
+    const name = nameRef.current && nameRef.current.value;
+
+    if (!name && !area) {
+      const response = await getData('/api/v1/user/all-doctors');
+      setDocData(response.data.doctors);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!name) {
+      const response = await getData(`/api/v1/user/doctors?area=${area}`);
+
+      setDocData(response.data.doctors);
+      setIsLoading(false);
+      return;
+    }
+
+    const params = queryBuilder({ area, name });
+
+    const response = await getData(`/api/v1/user/doctors${params}`);
+
+    setDocData(response.data.doctors);
+    setIsLoading(false);
+    return;
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      searchDocs(e);
+    }
   };
 
   return (
     <section className="flex flex-col gap-16 justify-center items-center mb-6 bg-gray-50">
       <article className="w-[92.5%]">
-        <form onSubmit={searchDocs}>
+        <form>
           <div>
             <label htmlFor="name"></label>
             <div className="relative">
               <input
+                ref={nameRef}
                 type="text"
                 name="name"
                 id="name"
-                className="border-2 w-full p-4 rounded-2xl bg-mainBGButtonColor text-[1.5rem]"
+                className="border-2 w-full p-4 rounded-2xl bg-mainBGButtonColor text-[1.5rem] pl-[10%]"
+                onKeyDown={handleKeyDown}
+              />
+              <img
+                src="/images/search_icon.jpg"
+                alt="search"
+                className="h-[40px] absolute top-1 left-[1%]"
+                onClick={searchDocs}
               />
             </div>
           </div>
